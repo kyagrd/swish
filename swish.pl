@@ -158,6 +158,9 @@ pengines:prepare_module(Module, swish, _Options) :-
 :- use_module(library(clpfd), []).
 :- use_module(library(clpb), []).
 
+% occurs check on
+:- set_prolog_flag(occurs_check,true).
+
 % load rendering modules
 
 :- use_module(swish(lib/render/sudoku),	  []).
