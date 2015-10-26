@@ -5,7 +5,7 @@
 
 TIPER stands for
 Type Inference Prototyping Engine from Relational specifications
-of type systems. Here we demonstrate a proof-of-consent implemented in Prolog
+of type systems. Here we demonstrate a proof-of-concept implemented in Prolog
 using SWISH notebooks, which are mixture of _text_, _programs_ and _queries_.
 You can interactively experiment by running queries and even modifying programs
 online through this web-based interface of SWISH.
