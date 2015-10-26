@@ -1,0 +1,189 @@
+<div class="notebook">
+
+<div class="nb-cell markdown">
+# The Hindlely--Milner type system (HM) specification
+This is a relational specification HM, which can be executed for both type checking and type inference, as we will demonstrate in this online interactive note.
+</div>
+
+<div class="nb-cell program" data-background="true">
+% set_prolog_flag not allowed in sandbox so hard-wired in the server
+% :- set_pro|og_flag(occurs_check,true).
+
+type(C,var(X),     T1) :- first(X:T,C), instantiate(T,T1).
+type(C,lam(X,E), A-&gt;B) :- type([X:mono(A)|C],E,B).
+type(C,app(X,Y),    B) :- type(C,X,A-&gt;B), type(C,Y,A).
+type(C,let(X=E0,E1),T) :- type(C,E0,A), type([X:poly(C,A)|C],E1,T).
+
+instantiate(poly(C,T),T1) :- copy_term(t(C,T),t(C,T1)).
+instantiate(mono(T),T).
+
+first(K:V,[K1:V1|_]) :- K = K1, V=V1.
+first(K:V,[K1:_|Xs]) :- K\==K1, first(K:V, Xs). % no cut but use var cmp
+</div>
+
+<div class="nb-cell markdown">
+Type checking query over an identity function. Use blue play button on the right to run.
+</div>
+
+<div class="nb-cell query">
+type([],lam(x,var(x)),A-&gt;A).
+</div>
+
+<div class="nb-cell markdown">
+When you have run the query you shoud see `true`, which indicates that the query was successful, and several buttons (Next, 10, 100, 1000, and Stop), which indicates that the query session is still alive. SWISH allows multiple live query sessions, but has limits to the number of alive query sessions and you will not be able to run more queries if you keep certin number of them alive without good reason. So, I recommend to press Stop button after each query, unless you have a good reason to keep it alive. (You can of course experiment with the other buttons before pressing Stop). The live query can sometimes time-out if you leave them too long. To re-run the query, simply press the blue play button on the right of the query agian.
+</div>
+
+<div class="nb-cell markdown">
+Type inference query over an identity function.
+</div>
+
+<div class="nb-cell query">
+type([],lam(x,var(x)),T).
+</div>
+
+<div class="nb-cell markdown">
+Type inference query of an application of identity to identity, which is equivalent to the identity.
+</div>
+
+<div class="nb-cell query">
+ID=lam(x,var(x)), type([],app(ID,ID),T).
+</div>
+
+<div class="nb-cell markdown">
+Monomorphically bound identity is not polymorphic. (This query will fail.)
+</div>
+
+<div class="nb-cell query">
+type([],app(lam(id,app(var(id),var(id))),lam(x,var(x))),T).
+</div>
+
+<div class="nb-cell markdown">
+The `let`-term introduces polymorphic bindings. (This query should succeed.)
+</div>
+
+<div class="nb-cell query">
+type([],let(id=lam(x,var(x)),app(var(id),var(id))),T).
+</div>
+
+<div class="nb-cell markdown">
+We can build more complex examples to type infer using the abstract syntax, but it will soon become too verbose to do it manually. For example, the abstract syntax term will build up like `app(app(app(.....)))` when there are several consecutive applictions. The Prolog community have developed a notation/library called Definite Clause Grammer(DCG)s for syntax analysis, which has also been used intensively in Natrual Langaue Processing where they need to handle context-sensitive structures a lot. We can use DCGs for a more simple purpose of context-free grammar parsing. Here, for parsing the concrete syntax of HM.
+
+## Tokenizer (Lexer)
+</div>
+
+<div class="nb-cell program" data-background="true">
+:- use_module(library(dcg/basics)).
+
+%%%% Tokenizer (Lexer)
+tokenize(Ts) --&gt; tok(Ts), blanks.
+
+tok(["(" |Ts]) --&gt; blanks, `(` , tok(Ts).
+tok([")" |Ts]) --&gt; blanks, `)` , tok(Ts).
+tok(["\\"|Ts]) --&gt; blanks, `\\`, tok(Ts).
+tok(["." |Ts]) --&gt; blanks, `.` , tok(Ts).
+tok(["=" |Ts]) --&gt; blanks, `=` , tok(Ts).
+tok(["let"|Ts])--&gt; blanks,`let`, tok(Ts).
+tok(["in"|Ts]) --&gt; blanks, `in`, tok(Ts).
+tok([X   |Ts]) --&gt; blanks, identifier(X), tok(Ts).
+tok([]) --&gt; blanks.
+
+identifier(X) --&gt; ident_start(C), many_identcont(Cs),
+                  { atom_codes(X,[C|Cs]) }.
+
+ident_start(C) --&gt; [C], { code_type(C,prolog_atom_start) }.
+
+ident_cont(C) --&gt; [C], { code_type(C,prolog_identifier_continue) }.
+
+many_identcont([C|Cs]) --&gt; ident_cont(C), many_identcont(Cs).
+many_identcont([])     --&gt; [].
+</div>
+
+<div class="nb-cell markdown">
+## Parser
+</div>
+
+<div class="nb-cell program" data-background="true">
+%%%% Parsec-style Parser implementation for STLC
+tm(let(X=E0,E1)) --&gt; ["let",X], { atom(X) }, ["="], tm(E0),
+                     ["in"], tm(E1).
+tm(lam(X,E)) --&gt; ["\\"], tm_var(X), ["."], tm(E).
+tm(E)        --&gt; many_tm1([T|Ts]), { foldl_app(T,Ts,E) }.
+
+tm1(X)      --&gt; ["("], tm(X), [")"].
+tm1(var(V)) --&gt; tm_var(V).
+
+tm_var(X) --&gt; [X], {atom(X)}. 
+
+many_tm1([T|Ts]) --&gt; tm1(T), many_tm1(Ts). 
+many_tm1([])     --&gt; [].
+
+foldl_app(E, []     , E).
+foldl_app(E0,[E1|Es], E) :- foldl_app(app(E0,E1), Es, E).
+
+% putting it all together with some error handling for lexing &amp; parsing
+type_of_program(Cs, E, Ty) :-
+    phrase(tokenize(Ts), Cs, RestTok), !,
+    (   RestTok == [] -&gt;  true
+    ;	(write("lexer error, cannot tokenize: "),
+            string_codes(StrRTok,RestTok),write(StrRTok),nl,fail)
+    ),
+    ( phrase(tm(E), Ts, RestTm) -&gt; ! ; (write("parser error"),nl,fail) ),
+    (   RestTm == [] -&gt;  true
+    ;	(write("parser error, cannot parse: "),print(RestTm),nl,fail)
+    ),
+    write("parse ok"), nl,
+    type([],E,Ty). % error handling for type inference not yet TODO
+</div>
+
+<div class="nb-cell markdown">
+Here are some examples of using `type_of_program`.
+</div>
+
+<div class="nb-cell query">
+type_of_program(`\\x.\\y.x`,E,T).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`\\x.\\y.x`,E,T).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`(\\x.\\y.y x) (\\y.y)`,E,T).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`\\x1.\\x2.x1 x2`,E,T).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`let id=\\x.x in id id`,E,T).
+</div>
+
+<div class="nb-cell markdown">
+Here is a progarm with a lexical error. (We don't have a `*` operator in the syntax.)
+</div>
+
+<div class="nb-cell query">
+type_of_program(`\\x.\\y.x * y`,E,T).
+</div>
+
+<div class="nb-cell markdown">
+Here are some programs with a syntax error. (Mismatching parenthesis is missing).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`( \\x.\\y. x y`,E,T).
+</div>
+
+<div class="nb-cell query">
+type_of_program(`\\x.\\y. x y )`,E,T).
+</div>
+
+<div class="nb-cell markdown">
+## Note
+There are more advanced ways of specifying a parser in Prolog with more sophisticated error handling. Our focus is not parsing itself. There are also mature parser geneators developed in other languages too.
+
+Here, we demonstrate that it is possible to develop a declarative, relatiotional, and executable specification of a type system and acutally use it over a program text.
+</div>
+
+</div>

@@ -1,0 +1,24 @@
+<div class="notebook">
+
+<div class="nb-cell markdown">
+# Welcome to SWISH
+
+TIPER stands for
+Type Inference Prototyping Engine from Relational specifciations
+of type systems. Here we demonstrate a proof-of-concent implemented in Prolog
+using SWISH notebooks, which is a a mixture of _text_, _programs_ and _queries_.
+You can interactively experiment by running queires and even modifying programs
+online through this web-based interface of SWISH. If you want to know more
+about SWI-Prolog and SWISH see [the examples on SWISH](http://kyagrd.koding.io:3050/example/examples.swinb).
+
+  - *Simply-Typed Lambda Calculus*
+    - The [STLC example](http://kyagrd.koding.io:3050/example/STLC.swinb).
+
+  - *Hindley--Milner type system (HM)*
+    - The [HM example](http://kyagrd.koding.io:3050/example/HM.swinb).
+
+  - *HM + Type Constructor polymorphism + Kind polymorphism *
+    - TODO
+</div>
+
+</div>
