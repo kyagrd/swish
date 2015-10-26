@@ -30,7 +30,7 @@ type([],lam(x,var(x)),A-&gt;A).
 </div>
 
 <div class="nb-cell markdown">
-When you have run the query you shoud see `true`, which indicates that the query was successful, and several buttons (Next, 10, 100, 1000, and Stop), which indicates that the query session is still alive. SWISH allows multiple live query sessions, but has limits to the number of alive query sessions and you will not be able to run more queries if you keep certin number of them alive without good reason. So, I recommend to press Stop button after each query, unless you have a good reason to keep it alive. (You can of course experiment with the other buttons before pressing Stop). The live query can sometimes time-out if you leave them too long. To re-run the query, simply press the blue play button on the right of the query agian.
+When you have run the query you should see `true`, which indicates that the query was successful, and several buttons (Next, 10, 100, 1000, and Stop), which indicates that the query session is still alive. SWISH allows multiple live query sessions, but has limits to the number of alive query sessions and you will not be able to run more queries if you keep certain number of them alive without good reason. So, I recommend to press Stop button after each query, unless you have a good reason to keep it alive. (You can of course experiment with the other buttons before pressing Stop). The live query can sometimes time-out if you leave them too long. To re-run the query, simply press the blue play button on the right of the query again.
 </div>
 
 <div class="nb-cell markdown">
@@ -181,9 +181,9 @@ type_of_program(`\\x.\\y. x y )`,E,T).
 
 <div class="nb-cell markdown">
 ## Note
-There are more advanced ways of specifying a parser in Prolog with more sophisticated error handling. Our focus is not parsing itself. There are also mature parser geneators developed in other languages too.
+There are more advanced ways of specifying a parser in Prolog with more sophisticated error handling. Our focus is not parsing itself. There are also mature parser generators developed in other languages too.
 
-Here, we demonstrate that it is possible to develop a declarative, relatiotional, and executable specification of a type system and acutally use it over a program text.
+Here, we demonstrate that it is possible to develop a declarative, relational, and executable specification of a type system and actually use it over a program text.
 </div>
 
 </div>

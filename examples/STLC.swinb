@@ -2,7 +2,10 @@
 
 <div class="nb-cell markdown">
 # The STLC type system specification
-Here is a type system specification for the Simply-Typed Lambda Calculus (STLC) using Prolog. This is a relational specification, which can be used for both type checking and type inference, as we will demonstrate in this online interactive note.
+Here is a type system specification for the Simply-Typed Lambda Calculus (STLC)
+using Prolog. This is a relational specification, which can be used for
+both type checking and type inference, as we will demonstrate in this
+online interactive note.
 </div>
 
 <div class="nb-cell program" data-background="true">
@@ -18,7 +21,8 @@ first(K:V,[K1:_|Xs]) :- K\==K1, first(K:V, Xs). % no cut but use var cmp
 </div>
 
 <div class="nb-cell markdown">
-Type checking query over an identity function. Use blue play button on the right to run.
+Type checking query over an identity function.
+Use blue play button on the right to run.
 </div>
 
 <div class="nb-cell query">
@@ -26,7 +30,16 @@ type([],lam(x,var(x)),A-&gt;A).
 </div>
 
 <div class="nb-cell markdown">
-When you have run the query you shoud see `true`, which indicates that the query was successful, and several buttons (Next, 10, 100, 1000, and Stop), which indicates that the query session is still alive. SWISH allows multiple live query sessions, but has limits to the number of alive query sessions and you will not be able to run more queries if you keep certin number of them alive without good reason. So, I recommend to press Stop button after each query, unless you have a good reason to keep it alive. (You can of course experiment with the other buttons before pressing Stop). The live query can sometimes time-out if you leave them too long. To re-run the query, simply press the blue play button on the right of the query agian.
+When you have run the query you should see `true`, which indicates that
+the query was successful, and several buttons (Next, 10, 100, 1000, and Stop),
+which indicates that the query session is still alive. SWISH allows multiple
+live query sessions, but has limits on the number of alive query sessions.
+You will not be able to run more queries if you reach that limit. We recommend
+you to press Stop button after each query, unless you have a good reason to
+keep it alive. (You can of course experiment with the other buttons before
+pressing Stop). The query session can sometimes time-out if you leave it
+too long. To re-run the query, simply press the blue play button on
+the right of the query again.
 </div>
 
 <div class="nb-cell markdown">
@@ -46,7 +59,15 @@ ID=lam(x,var(x)), type([],app(ID,ID),T).
 </div>
 
 <div class="nb-cell markdown">
-We can build more complex examples to type infer using the abstract syntax, but it will soon become too verbose to do it manually. For example, the abstract syntax term will build up like `app(app(app(.....)))` when there are several consecutive applictions. The Prolog community have developed a notation/library called Definite Clause Grammer(DCG)s for syntax analysis, which has also been used intensively in Natrual Langaue Processing where they need to handle context-sensitive structures a lot. We can use DCGs for a more simple purpose of context-free grammar parsing. Here, for parsing the concrete syntax of STLC.
+We can build more complex examples to type infer using the abstract syntax,
+but it will soon become too verbose to do it manually. For example,
+the abstract syntax term will build up like `app(app(app(.....)))` when
+there are several consecutive applications. The Prolog community have developed
+a notation/library called Definite Clause Grammar(DCG)s for syntax analysis,
+which has also been used intensively in Natural Language Processing where
+they need to handle context-sensitive structures. We can use DCGs for a more
+simple purpose of context-free grammar parsing. Here, in particular, for
+parsing the concrete syntax of STLC.
 
 ## Tokenizer (Lexer)
 </div>
@@ -131,7 +152,7 @@ type_of_program(`\\x1.\\x2.x1 x2`,E,T).
 </div>
 
 <div class="nb-cell markdown">
-Here is a progarm with a lexical error. (We don't have a `*` operator in the syntax.)
+Here is a program with a lexical error. (We don't have a `*` operator in the syntax.)
 </div>
 
 <div class="nb-cell query">
@@ -152,9 +173,9 @@ type_of_program(`\\x.\\y. x y )`,E,T).
 
 <div class="nb-cell markdown">
 ## Note
-There are more advanced ways of specifying a parser in Prolog with more sophisticated error handling. Our focus is not parsing itself. There are also mature parser geneators developed in other languages too.
+There are more advanced ways of specifying a parser in Prolog with more sophisticated error handling. Our focus is not parsing itself. There are also mature parser generators developed in other languages too.
 
-Here, we demonstrate that it is possible to develop a declarative, relatiotional, and executable specification of a type system and acutally use it over a program text.
+Here, we demonstrate that it is possible to develop a declarative, relational, and executable specification of a type system and actually use it over a program text.
 </div>
 
 </div>

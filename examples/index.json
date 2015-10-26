@@ -1,6 +1,12 @@
 // list of examples, represented as a JSON list
 
 [
+{ "file":"tiper.swinb",	  "title":"TIPER introduction" },
+"--",
+{ "file":"STLC.swinb",	  "title":"STLC type system spec." },
+{ "file":"HM.swinb",	  "title":"HM type system spec." },
+"--",
+"--",
 { "file":"examples.swinb",	  "title":"Example programs" },
 "--",
 { "file":"dict.swinb",		  "title":"Dict tutorial" },
